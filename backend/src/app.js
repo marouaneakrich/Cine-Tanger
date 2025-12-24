@@ -10,7 +10,9 @@ const errorMiddleware = require("./middlewares/error.middleware");
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: ['https://cine-tanger.up.railway.app']
+}));
 app.use(express.json());
 
 // Routes
