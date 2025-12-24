@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
+const { apiReference } = require("@scalar/express-api-reference");
+const swaggerSpec = require("../config/swagger");
+
 const movieRoutes = require("./routes/movie.routes");
 const sessionRoutes = require("./routes/session.routes");
 const reservationRoutes = require("./routes/reservation.routes");
@@ -14,6 +17,15 @@ app.use(cors({
   origin: ['https://cine-tanger.up.railway.app']
 }));
 app.use(express.json());
+
+app.use(
+  "/api-docs",
+  apiReference({
+    spec: {
+      content: swaggerSpec,
+    },
+  })
+);
 
 // Routes
 app.use("/api/movies", movieRoutes);
