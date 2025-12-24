@@ -16,6 +16,10 @@ const Movie = sequelize.define("Movie", {
   duration: {
     type: DataTypes.INTEGER, // minutes
   },
+  rating: {
+    type: DataTypes.INTEGER, // Rating as integer (e.g., 8, 9, 10)
+    defaultValue: 0,
+  },
 });
 
 module.exports = Movie;
