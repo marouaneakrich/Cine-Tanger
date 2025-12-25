@@ -19,6 +19,7 @@ app.use(express.json());
 app.use("/api/movies", movieRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/reservations", reservationRoutes);
+app.use("/api/rooms", roomRoutes);
 
 // Health check
 app.get("/", (req, res) => {
