@@ -4,6 +4,7 @@ const cors = require("cors");
 const movieRoutes = require("./routes/movie.routes");
 const sessionRoutes = require("./routes/session.routes");
 const reservationRoutes = require("./routes/reservation.routes");
+const roomRoutes = require("./routes/room.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
