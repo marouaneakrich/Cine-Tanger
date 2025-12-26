@@ -8,7 +8,8 @@ const getApiBaseUrl = () => {
   const host = (hostUri || debuggerHost || "").split(":")[0];
   if (host) return `http://${host}:5000/api`;
 
-  return "http://localhost:5000/api";
+  // Use your local IP address for mobile connection
+  return "http://192.168.1.147:5000/api";
 };
 
 export const api = axios.create({

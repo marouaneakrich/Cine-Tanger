@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   View, 
   FlatList, 
@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { getMovies } from "../services/movie.service";
+import { useMovies } from "../hooks/useQueries";
+import { useAppStore } from "../store/appStore";
 import ReservationsScreen from "./ReservationsScreen";
 import LottieView from 'lottie-react-native';
 
@@ -59,7 +60,7 @@ function SplashScreen({ onFinish }) {
   return (
     <View style={splashStyles.container}>
       <LottieView
-        source={require('../assets/images/Movie Theatre.json')}
+        source={require('../assets/Movie.json')}
         style={splashStyles.animation}
         autoPlay={true}
         loop={false}
@@ -108,24 +109,15 @@ const splashStyles = StyleSheet.create({
 });
 
 function MoviesListScreen({ navigation }) {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: movies, isLoading, error, refetch } = useMovies();
+  const { setSelectedMovie } = useAppStore();
 
-  useEffect(() => {
-    getMovies()
-      .then((data) => {
-        setMovies(data);
-        setError(null);
-      })
-      .catch((err) => {
-        setError("Failed to load movies. Please try again.");
-        console.error("Error loading movies:", err);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const handleMoviePress = (movie) => {
+    setSelectedMovie(movie);
+    navigation.navigate("MovieDetailsScreen", { movieId: movie.id });
+  };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#e50914" />
@@ -137,17 +129,10 @@ function MoviesListScreen({ navigation }) {
   if (error) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>Failed to load movies. Please try again.</Text>
         <TouchableOpacity 
           style={styles.retryButton}
-          onPress={() => {
-            setLoading(true);
-            setError(null);
-            getMovies()
-              .then(setMovies)
-              .catch(() => setError("Failed to load movies. Please try again."))
-              .finally(() => setLoading(false));
-          }}
+          onPress={() => refetch()}
         >
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
@@ -158,7 +143,7 @@ function MoviesListScreen({ navigation }) {
   const renderMovieCard = ({ item }) => (
     <TouchableOpacity
       style={styles.movieCard}
-      onPress={() => navigation.navigate("MovieDetailsScreen", { movieId: item.id })}
+      onPress={() => handleMoviePress(item)}
       activeOpacity={0.8}
     >
       <Image 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { 
   View, 
   FlatList, 
@@ -10,39 +10,12 @@ import {
   Alert
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getReservationsByCustomer, deleteReservation } from "../services/reservation.service";
+import { useReservations, useDeleteReservation } from "../hooks/useQueries";
 import QRCode from "react-native-qrcode-svg";
 
 export default function ReservationsScreen() {
-  const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    loadReservations();
-  }, []);
-
-  const loadReservations = async () => {
-    try {
-      // Get customer email from AsyncStorage
-      const customerEmail = await AsyncStorage.getItem('customerEmail');
-      
-      if (!customerEmail) {
-        setError('No customer email found. Please book a ticket first.');
-        return;
-      }
-
-      const data = await getReservationsByCustomer(customerEmail);
-      setReservations(data);
-      setError(null);
-    } catch (err) {
-      setError("Failed to load reservations.");
-      console.error("Error loading reservations:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: reservations, isLoading, error, refetch } = useReservations();
+  const deleteReservationMutation = useDeleteReservation();
 
   const handleDeleteReservation = (reservationId) => {
     Alert.alert(
@@ -58,8 +31,7 @@ export default function ReservationsScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteReservation(reservationId);
-              setReservations(prev => prev.filter(r => r.id !== reservationId));
+              await deleteReservationMutation.mutateAsync(reservationId);
               Alert.alert("Success", "Reservation cancelled successfully");
             } catch (error) {
               Alert.alert("Error", "Failed to cancel reservation. Please try again.");
@@ -71,7 +43,7 @@ export default function ReservationsScreen() {
     );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#e50914" />
@@ -83,10 +55,10 @@ export default function ReservationsScreen() {
   if (error) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>Failed to load reservations.</Text>
         <TouchableOpacity 
           style={styles.retryButton}
-          onPress={loadReservations}
+          onPress={() => refetch()}
         >
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>

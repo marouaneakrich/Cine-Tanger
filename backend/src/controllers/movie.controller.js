@@ -1,32 +1,12 @@
 const Movie = require("../../models/Movie");
-const { sequelize } = require("../../models");
 
 exports.getAllMovies = async (req, res, next) => {
   try {
-    // Get movies without rating first
     const movies = await Movie.findAll({
       order: [["createdAt", "DESC"]],
     });
     
-    // Manually add rating from database
-    const moviesWithRating = await Promise.all(
-      movies.map(async (movie) => {
-        const [ratingResult] = await sequelize.query(
-          'SELECT rating FROM "Movies" WHERE id = :id',
-          {
-            replacements: { id: movie.id },
-            type: sequelize.QueryTypes.SELECT
-          }
-        );
-        
-        return {
-          ...movie.toJSON(),
-          rating: ratingResult.rating
-        };
-      })
-    );
-    
-    res.json(moviesWithRating);
+    res.json(movies);
   } catch (error) {
     next(error);
   }

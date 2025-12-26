@@ -1,9 +1,10 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { QueryProvider } from "../providers/QueryProvider";
 
 export default function Layout() {
   return (
-    <>
+    <QueryProvider>
       <StatusBar barStyle="light-content" backgroundColor="#141414" />
       <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
         <Stack.Screen 
@@ -52,6 +53,6 @@ export default function Layout() {
           }} 
         />
       </Stack>
-    </>
+    </QueryProvider>
   );
 }
