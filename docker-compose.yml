@@ -23,9 +23,7 @@ services:
       NODE_ENV: development
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+
 
 volumes:
   postgres_data:

@@ -2,12 +2,18 @@
   "name": "cinetanger-monorepo",
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["backend", "frontend"],
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "dev:backend": "npm run dev -w backend",
     "dev:frontend": "npm run start -w frontend"
+  },
+  "dependencies": {
+    "@scalar/express-api-reference": "^0.8.30"
   }
 }

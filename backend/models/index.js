@@ -1,46 +1,19 @@
-import fs from 'fs';
-import path from 'path';
-import process from 'process';
-import { Sequelize, DataTypes } from 'sequelize';
-import configJson from '../config/config.json' assert { type: 'json' };
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-const basename = path.basename(import.meta.url);
-const env = process.env.NODE_ENV || 'development';
-const config = configJson[env];
+// Check environment
+const isTest = process.env.NODE_ENV === 'test';
 
-const db = {};
-
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== path.basename(import.meta.url) &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
+// Use SQLite for testing, PostgreSQL for others
+const sequelize = isTest
+  ? new Sequelize({
+    dialect: 'sqlite',
+    storage: ':memory:',
+    logging: false
   })
-  .forEach(async file => {
-    const modelImport = await import(path.join(__dirname, file));
-    const model = modelImport.default(sequelize, DataTypes);
-    db[model.name] = model;
+  : new Sequelize(process.env.DB_URL || "postgresql://postgres:OYTgFgxhTUNOzeLJAgLUILuCpgsHfglT@interchange.proxy.rlwy.net:45912/railway", {
+    dialect: "postgres",
+    logging: false,
   });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-export default db;
+module.exports = { sequelize };
