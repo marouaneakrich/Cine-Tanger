@@ -103,6 +103,28 @@ eas build -p android --profile preview
 
 ---
 
+## 📱APK 
+
+[📥 Download APK](https://expo.dev/artifacts/eas/c1EL23ybEn57uZP3jGF6Ri.apk)
+
+## 🖥️ Presentation
+
+[🌐 View Presentation](https://cinetanger.netlify.app/)
+
+[📥 Download Presentation](./assets/CineTanger_Presentation.html)
+
+## 📮 Postman Collection
+
+[📥 Download Postman Collection](./assets/postman_collection.json)
+
+## UML/ERD Diagram
+
+![TGGE UML/ERD Diagram](./assets/UML.ERD.png)
+
+[📥 Download UML/ERD Diagram](./assets/UML.ERD.png)
+
+---
+
 ## 🚢 Deployment
 
 The project is configured for **CI/CD** using GitHub Actions:
