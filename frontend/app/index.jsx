@@ -60,7 +60,7 @@ function SplashScreen({ onFinish }) {
   return (
     <View style={splashStyles.container}>
       <LottieView
-        source={require('../assets/Movie.json')}
+        source={require('../assets/images/Movie-Theatre.json')}
         style={splashStyles.animation}
         autoPlay={true}
         loop={false}

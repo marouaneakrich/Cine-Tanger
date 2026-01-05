@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cine Tanger - Project Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e50914;
+            --background: #0a0a0a;
+            --surface: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #b3b3b3;
+            --accent: #ff4d4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow: hidden;
+            /* Prevent manual uncontrolled scrolling */
+        }
+
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .slide {
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+            scroll-snap-align: start;
+        }
+
+        .slide.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.7);
+            padding: 3rem;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 5.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.3));
+        }
+
+        h2 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 80px;
+            height: 5px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        h3 {
+            font-size: 2rem;
+            margin-bottom: 1.2rem;
+            color: var(--accent);
+        }
+
+        p {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            font-size: 1.5rem;
+            margin-bottom: 1.8rem;
+            padding-left: 2.5rem;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        li:hover {
+            transform: translateX(15px);
+            color: white;
+        }
+
+        li::before {
+            content: '⬥';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(229, 9, 20, 0.15);
+            color: var(--primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tech-tag {
+            background: rgba(40, 40, 40, 0.6);
+            padding: 1rem 1.8rem;
+            border-radius: 15px;
+            margin: 0.6rem;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .tech-tag:hover {
+            background: var(--primary);
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.4);
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 3rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(229, 9, 20, 0.6);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .download-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            font-size: 1rem;
+            color: #777;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media print {
+            .slide {
+                opacity: 1;
+                transform: none;
+                display: block;
+            }
+
+            #three-canvas {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide visible">
+        <div class="slide-content floating">
+            <span class="badge">PROJECT SHOWCASE 2026</span>
+            <h1>Cine Tanger</h1>
+            <h3 style="color: white; margin-top: -10px; font-weight: 300;">Elevating Cinema to the Digital Dimension
+            </h3>
+            <p style="max-width: 600px; margin-top: 2rem;">A premium theater booking ecosystem bridging the gap between
+                hardware and high-end digital experiences.</p>
+            <div class="footer">
+                <span>Presenter(Team Name): Last Brief</span>
+                <span>v1.0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: The Vision -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>The Vision</h2>
+            <div class="grid">
+                <div>
+                    <h3>Seamless Discovery</h3>
+                    <p>Creating a centralized 3D hub where movie-goers can explore all local screenings without
+                        friction.</p>
+                    <h3>Visual Mastery</h3>
+                    <p>Redefining how users interact with seat selections and ticket management.</p>
+                </div>
+                <div>
+                    <div
+                        style="background: rgba(229, 9, 20, 0.1); padding: 2.5rem; border-radius: 25px; border: 1px solid var(--primary);">
+                        <p style="color: var(--text); font-style: italic; font-size: 1.5rem;">"We didn't just build an
+                            app; we built a portal to the big screen."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Core Features -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Core Features</h2>
+            <ul>
+                <li><strong>Interactive Seat Selection:</strong> Real-time mapping of theater halls with direct seat
+                    reservation.</li>
+                <li><strong>Dynamic Movie Hub:</strong> Immersive browsing with integrated ratings and synopses.</li>
+                <li><strong>Smart QR Wallet:</strong> Secure local storage for tickets with offline accessibility.</li>
+                <li><strong>Contextual Filtering:</strong> Quick discovery by session time, room name, or movie genre.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 4: Frontend Architecture -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Frontend Tech Stack</h2>
+            <p>Built with performance and high-fidelity animations at the core.</p>
+            <div style="display: flex; flex-wrap: wrap;">
+                <span class="tech-tag">React Native</span>
+                <span class="tech-tag">Zustand</span>
+                <span class="tech-tag">TanStack Query</span>
+                <span class="tech-tag">Lottie Animations</span>
+                <span class="tech-tag">Expo Router</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Backend Powerhouse -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Backend Excellence</h2>
+            <p>A resilient cloud architecture built for scale.</p>
+            <div class="grid">
+                <div>
+                    <span class="tech-tag">Node.js / Express</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Sequelize ORM</span>
+                    <span class="tech-tag">Railway Cloud</span>
+                </div>
+                <div>
+                    <h3>Safety & Sync</h3>
+                    <p>Automated database seeding, email normalization, and comprehensive endpoint validation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Continuous Dev -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Development Pipeline</h2>
+            <p>Merging industrial standards with creative freedom.</p>
+            <ul>
+                <li><strong>Automated Testing:</strong> Full Jest suite for backend verification.</li>
+                <li><strong>CI/CD Workflow:</strong> Seamless deployment via GitHub Actions.</li>
+                <li><strong>Interactive Docs:</strong> Swagger / Scalar OpenAPI reference.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 7: Future Vision -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>The Roadmap</h2>
+            <div class="grid">
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3>Personalization</h3>
+                    <p>AI-driven recommendations and user-curated favorites.</p>
+                </div>
+                <div
+                    style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3>Global Payments</h3>
+                    <p>Stripe & Apple Pay integration for instant checkout.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Thank You -->
+    <div class="slide" style="text-align: center;">
+        <div class="slide-content floating">
+            <h1>Thank You</h1>
+            <p>Transforming the cinematic culture of Tanger.</p>
+
+            <a href="https://expo.dev/artifacts/eas/c1EL23ybEn57uZP3jGF6Ri.apk" class="download-btn">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M17.523 15.3414C17.1513 15.3414 16.8501 15.6425 16.8501 16.0143V17.3599H7.14986V16.0143C7.14986 15.6425 6.84869 15.3414 6.47693 15.3414C6.10517 15.3414 5.80401 15.6425 5.80401 16.0143V18.0328C5.80401 18.4045 6.10517 18.7057 6.47693 18.7057H17.523C17.8948 18.7057 18.1959 18.4045 18.1959 18.0328V16.0143C18.1959 15.6425 17.8948 15.3414 17.523 15.3414Z" />
+                    <path
+                        d="M12.4769 14.2882C12.4769 14.5518 12.2632 14.7656 11.9996 14.7656C11.7361 14.7656 11.5223 14.5518 11.5223 14.2882V5.99285C11.5223 5.72929 11.7361 5.5155 11.9996 5.5155C12.2632 5.5155 12.4769 5.72929 12.4769 5.99285V14.2882Z" />
+                    <path
+                        d="M8.39702 11.1396C8.21074 10.9533 7.90886 10.9533 7.72258 11.1396C7.53631 11.3258 7.53631 11.6277 7.72258 11.814L11.6624 15.7538C11.8487 15.9401 12.1506 15.9401 12.3368 15.7538L16.2766 11.814C16.4629 11.6277 16.4629 11.3258 16.2766 11.1396C16.0903 10.9533 15.7885 10.9533 15.6022 11.1396L11.9996 14.7422L8.39702 11.1396Z" />
+                </svg>
+                Download APK for Android
+            </a>
+
+            <h3 style="color: white; margin-top: 4rem; letter-spacing: 5px;">CINE TANGER</h3>
+            <p style="font-size: 1.1rem; opacity: 0.6;">cine-tanger.up.railway.app</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Three.js Background Animation
+        let scene, camera, renderer, stars, starGeo;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 1;
+            camera.rotation.x = Math.PI / 2;
+
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            starGeo = new THREE.BufferGeometry();
+            let positions = [];
+            let velocities = [];
+            for (let i = 0; i < 6000; i++) {
+                positions.push(Math.random() * 600 - 300);
+                positions.push(Math.random() * 600 - 300);
+                positions.push(Math.random() * 600 - 300);
+                velocities.push(0.5 + Math.random());
+            }
+            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+
+            let sprite = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
+            let starMaterial = new THREE.PointsMaterial({
+                color: 0xe50914,
+                size: 0.7,
+                map: sprite,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+
+            stars = new THREE.Points(starGeo, starMaterial);
+            scene.add(stars);
+
+            animate();
+        }
+
+        function animate() {
+            let positions = starGeo.attributes.position.array;
+            for (let i = 0; i < 6000; i++) {
+                positions[i * 3 + 1] -= 0.2; // Move downward
+                if (positions[i * 3 + 1] < -200) {
+                    positions[i * 3 + 1] = 200;
+                }
+            }
+            starGeo.attributes.position.needsUpdate = true;
+            stars.rotation.y += 0.001;
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        init();
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Scroll Animation Logic
+        const slides = document.querySelectorAll('.slide');
+        let currentSlideIndex = 0;
+
+        const observerOptions = {
+            threshold: 0.4
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Update index based on the intersecting element
+                    currentSlideIndex = Array.from(slides).indexOf(entry.target);
+                } else {
+                    entry.target.classList.remove('visible');
+                }
+            });
+        }, observerOptions);
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // Keyboard Navigation
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+                if (currentSlideIndex < slides.length - 1) {
+                    currentSlideIndex++;
+                    scrollToSlide(currentSlideIndex);
+                }
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    scrollToSlide(currentSlideIndex);
+                }
+            }
+        });
+
+        function scrollToSlide(index) {
+            slides[index].scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    </script>
+</body>
+
+</html>
