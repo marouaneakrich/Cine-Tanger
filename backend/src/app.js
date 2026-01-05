@@ -18,15 +18,6 @@ app.use(cors({
 app.use(express.json());
 
 
-app.use(
-  "/api-docs",
-  apiReference({
-    spec: {
-      content: swaggerSpec,
-    },
-  })
-);
-
 // Routes
 app.use("/api/movies", movieRoutes);
 app.use("/api/sessions", sessionRoutes);
@@ -34,9 +25,11 @@ app.use("/api/reservations", reservationRoutes);
 app.use("/api/rooms", roomRoutes);
 
 // Health check
-app.get("/", (req, res) => {
-  res.json({ message: "🎬 CineTanger API is running" });
-});
+app.use("/", apiReference({
+  spec: {
+    content: swaggerSpec,
+  },
+}));
 
 // Error handler
 app.use(errorMiddleware);
