@@ -117,6 +117,10 @@ eas build -p android --profile preview
 
 [📥 Download Postman Collection](./assets/postman_collection.json)
 
+## 📘 API Docs
+
+[🌐 View Presentation](https://cine-tanger.up.railway.app/)
+
 ## UML/ERD Diagram
 
 ![TGGE UML/ERD Diagram](./assets/UML.ERD.png)
