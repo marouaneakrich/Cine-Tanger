@@ -56,4 +56,4 @@ jobs:
         working-directory: ./backend
         run: railway up --service backend --detach
         env:
-          RAILWAY_TOKEN: 30828ba7-e3d0-4b8e-a9eb-4ac03f8dadca
+          RAILWAY_TOKEN: e95852c5-76eb-4232-8e25-4016df369051
