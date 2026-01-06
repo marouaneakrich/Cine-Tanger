@@ -18,42 +18,39 @@ jobs:
       run:
         working-directory: ./backend
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+      - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: npm ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-    - name: Run tests
-      run: npm test
-      env:
-        NODE_ENV: production
+      - run: npm ci
+
+      - run: npm test
+        env:
+          NODE_ENV: test
 
   deploy:
     name: Deploy to Railway
-    environment: production
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-      
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - run: npm install -g @railway/cli
+
       - name: Deploy
         working-directory: ./backend
-        run: railway up --service backend --detach
+        run: railway up --detach
         env:
-          RAILWAY_TOKEN: e95852c5-76eb-4232-8e25-4016df369051
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          NODE_ENV: production
