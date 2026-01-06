@@ -38,8 +38,7 @@ jobs:
     - name: Run tests
       run: npm test
       env:
-        NODE_ENV: test
-        # We don't need real DB creds for tests as we use sqlite::memory:
+        NODE_ENV: production
 
   deploy:
     name: Deploy to Railway

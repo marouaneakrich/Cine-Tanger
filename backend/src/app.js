@@ -25,11 +25,18 @@ app.use("/api/reservations", reservationRoutes);
 app.use("/api/rooms", roomRoutes);
 
 // Health check
-app.use("/", apiReference({
+app.use("/api-docs", apiReference({
   spec: {
     content: swaggerSpec,
   },
 }));
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: '🎬 CineTanger API is running'
+  });
+});
+
 
 // Error handler
 app.use(errorMiddleware);
