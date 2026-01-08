@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAppStore } from '../store/appStore';
 
-// Create a client
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -15,20 +15,27 @@ export default function Layout() {
           }} 
         />
         <Stack.Screen 
-          name="HomeScreen" 
+          name="SplashScreen" 
           options={{ 
             headerShown: false,
-            title: "Welcome"
+            title: "Splash"
           }} 
         />
         <Stack.Screen 
-          name="MainApp" 
+          name="MainAppComponent" 
+          options={{ 
+            headerShown: false,
+            title: "Main App"
+          }} 
+        />
+        <Stack.Screen 
+          name="MoviesListScreen" 
           options={{ 
             headerShown: false,
             title: "Movies"
           }} 
         />
-        <Stack.Screen 
+                <Stack.Screen 
           name="MovieDetailsScreen" 
           options={{ 
             title: "Movie Details",

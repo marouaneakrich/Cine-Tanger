@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { 
   View, 
   Text, 
-  Button, 
   TextInput, 
   ScrollView, 
   ActivityIndicator, 
@@ -37,7 +36,6 @@ export default function BookingScreen() {
         const data = await getSessionsByMovie(movieId);
         setSessions(data);
         
-        // If sessionId is provided, pre-select that session
         if (sessionId != null) {
           const normalizedSessionId = typeof sessionId === "string" ? parseInt(sessionId, 10) : sessionId;
           const session = data.find((s) => s.id === normalizedSessionId);
@@ -78,7 +76,6 @@ export default function BookingScreen() {
         sessionId: selectedSession.id,
       });
       
-      // Save customer email to AsyncStorage for future use
       await AsyncStorage.setItem('customerEmail', email.trim());
       
       Alert.alert(
@@ -92,7 +89,25 @@ export default function BookingScreen() {
         ]
       );
     } catch (error) {
-      Alert.alert("Booking Failed", error.message || "Failed to complete booking. Please try again.");
+      let errorMessage = "Failed to complete booking. Please try again.";
+      
+      if (error.response?.status === 400) {
+        if (error.response.data?.message?.includes("already reserved")) {
+          errorMessage = "This seat is already taken. Please select a different seat.";
+          // Refresh reserved seats to get latest data
+          if (selectedSession) {
+            getReservedSeatsBySession(selectedSession.id)
+              .then(setReservedSeats)
+              .catch((err) => console.error("Error refreshing reserved seats:", err));
+          }
+        } else if (error.response.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.response?.status === 404) {
+        errorMessage = "Session not found. Please select a different session.";
+      }
+      
+      Alert.alert("Booking Failed", errorMessage);
     } finally {
       setBookingLoading(false);
     }

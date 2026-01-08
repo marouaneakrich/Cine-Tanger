@@ -33,7 +33,7 @@ export default function MovieDetailsScreen() {
         const [movieData, sessionsData] = await Promise.all([
           getMovieById(movieId),
           getSessionsByMovie(movieId)
-        ]);
+]);
         setMovie(movieData);
         setSessions(sessionsData);
         setError(null);

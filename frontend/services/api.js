@@ -6,10 +6,9 @@ const getApiBaseUrl = () => {
   const debuggerHost = Constants.expoConfig?.debuggerHost;
 
   const host = (hostUri || debuggerHost || "").split(":")[0];
-  if (host) return `http://${host}:5000/api`;
+  if (host) return `http://${host}:80/api`;
 
-  // Use your local IP address for mobile connection
-  return "http://192.168.1.147:5000/api";
+  return "http://192.168.1.147:80/api";
 };
 
 export const api = axios.create({
@@ -20,7 +19,6 @@ export const api = axios.create({
   },
 });
 
-// Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -32,7 +30,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`);
@@ -44,7 +41,6 @@ api.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       error.message = "Request timeout. Please check your connection.";
     } else if (error.response) {
-      // Server responded with error status
       const status = error.response.status;
       if (status === 404) {
         error.message = "Resource not found.";
@@ -54,7 +50,6 @@ api.interceptors.response.use(
         error.message = error.response.data?.message || "Bad request.";
       }
     } else if (error.request) {
-      // Network error
       error.message = "Network error. Please check your internet connection.";
     }
     
@@ -62,7 +57,6 @@ api.interceptors.response.use(
   }
 );
 
-// Utility function for retry logic
 export const withRetry = async (apiCall, maxRetries = 3) => {
   let lastError;
   
