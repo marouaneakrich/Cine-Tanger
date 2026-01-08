@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  postgres:
+    build: ./database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: cinetanger
+      POSTGRES_USER: marouaneakrich
+      POSTGRES_PASSWORD: 20162016
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: development
+    depends_on:
+      - postgres
+
+
+volumes:
+  postgres_data:
+  postgres_backups:
